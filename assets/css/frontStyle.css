@@ -1,0 +1,127 @@
+#MyTestimonial_front_main{
+    display: grid;
+    grid-template-columns: repeat(3, 250px);
+    grid-template-rows: repeat(1, 400px);
+}
+.MyTestimonial_front_each{
+    background-color:#f7f7f7;
+    margin: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-top:10px;
+    border-radius: 5px;
+}
+.post_Content{
+   overflow: hidden;
+   text-overflow: ellipsis;
+   display: -webkit-box;
+   -webkit-line-clamp: 2; /* number of lines to show */
+   -webkit-box-orient: vertical;
+   margin: 0px;
+   height: 58px;
+}
+.post_Title{
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* number of lines to show */
+    -webkit-box-orient: vertical;
+    margin: 0px;
+    font-size: 20px;
+    font-weight: bold;
+}
+.post_Dated{
+    margin: 0px;
+}
+.imgs{
+    height: 60%;
+    width: 100%;
+}
+.imgt{
+    width:30%;
+    border-radius: 10px;
+}
+.bottom{
+
+}
+#close{
+    display: none;
+}
+#MyTestimonial_addNew_Table{
+    border: 1px solid black;
+    display: none;
+}
+#imgs{
+    height: 100px;
+    width: 100px;
+    display: none;
+}
+.ForCatTag{
+    display: none;
+}
+.ForCatTag p{
+    /* background-color: silver; */
+    color: black;
+    width: fit-content;
+    padding: 3px;
+    border-radius: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin: 0px;
+    margin-left: 3px;
+    border: 2px solid #0073aa;
+    color: #0073aa;
+}
+.Tags,.Categories{
+    display: flex;
+    height: 28px;
+    overflow: hidden;
+}
+.Tags{
+    margin-top: 5px;
+}
+.Tags p{
+    border: 2px solid #c3d9e6!important;
+    /* background-color: gray!important; */
+}
+.View{
+    height: 50px;
+    width: 50px;
+
+}
+#ComView{
+    display: none;
+}
+#Desc{
+    width: 730px;
+}
+.post_Title a{
+    text-decoration: none!important;
+    color: black!important;
+}
+#pagination{
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+}
+#action{
+    display: flex;
+    justify-content: space-between;
+}
+.page-numbers{
+    width: 20px;
+    margin-left: 10px;
+    text-decoration: none!important;
+    /* font-size: 12px; */
+}
+#right{
+    float: right;
+}
+.page-numbers.current {
+    /* background-color: #0d0d0d; */
+    border:1px solid #0d0d0d;
+    color: #0d0d0d;
+    padding: 10px;
+    border-radius: 9px;
+}
