@@ -10,7 +10,7 @@
 
 if (!class_exists('wlf_auto_cache_main_main')) {
 
-	class wlf_auto_cache_main_main {
+	class wlf_auto_cache_main_main { 
 		
 		public function __construct() {
 
