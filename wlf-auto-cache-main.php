@@ -399,7 +399,7 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 			'has_archive'           => true,
 			'Hierarchical'          => false,
 			'menu_position'         => null,
-			'menu_icon'             => '"' .WP_PLUGIN_URL.'/wlf-Aelieve-Master/assets/img/logo (1).svg'. '"',
+			'menu_icon'             => '"' .WLF_URL.'/assets/img/logo (1).svg'. '"',
 			'supports'              => array(''),
 			);
 			register_post_type('wlf_auto_cache', $args);

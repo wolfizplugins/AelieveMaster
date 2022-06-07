@@ -19,11 +19,34 @@ if (!class_exists('MyTestimonial_Add')) {
 			add_action( 'wp_ajax_wlf_cloud_disc', array($this,'wlf_cloud_disc'), 10 );
 			add_action( 'wp_ajax_wlf_manual_cache', array($this,'wlf_manual_cache'), 10 );
 			add_action( 'elementor/editor/after_save', array($this,'SaveLogsForElementor'),10 ,2 );
+			add_action( 'wp_ajax_wlf_data_for_action', array($this,'wlf_data_for_action'), 10 );
 		}
 
 		public function SaveLogsForElementor($post_id, $editor_data )
 		{
 			$this->wlf_auto_cache_manage($post_id);
+		}
+
+		public function wlf_data_for_action() {
+
+			if(isset($_POST['selectedtrigger2'])){
+				$pro = $_POST['selectedtrigger2'];
+			}
+			$data = get_post_meta($pro,'_elementor_conditions');
+			$valsend = array();
+			foreach ($data as $value) {
+				foreach($value as $val){
+					$val1 = explode('/',$val)[3];
+					if(explode('/',$val)[2]=="page"){
+						$valsend[] = $val1;
+					}
+				}
+			}
+			$response       = array(
+				'sel_data' => $valsend,
+				);
+				echo wp_json_encode( $response );
+			die();
 		}
 
 		public function renderFields($pid)
@@ -55,6 +78,7 @@ if (!class_exists('MyTestimonial_Add')) {
     					{ ?>
 						<span id="wlf_headers" style="float:right" ><input type="button" id="sps" title="delete this rule" class="button button-primary wf_jk_sync_data_jira wlf_del"value='Remove Trigger/Action' data-postId="<?php echo esc_attr($pid); ?>" data-delId="<?php echo esc_attr($value); ?>" /></span>
 						<?php  } $first = false; ?>
+						<div class="wlf_cache_divs">
 						<div class="wsl-row" style="display: flex;">
 							<div class="wsl-col-6-80">
 								<h1>Trigger</h1>
@@ -93,7 +117,7 @@ if (!class_exists('MyTestimonial_Add')) {
 								$prs       = get_posts( $args );
 								?>
 								<div style="display: flex;">
-								<select id="wlf_multi_select<?php echo esc_attr($value); ?>" multiple name="wlf_fields_loop<?php echo esc_attr($value);?>[]" class="wlf_multi_select">
+								<select data-val="<?php echo esc_attr($value);?>" id="wlf_multi_select<?php echo esc_attr($value); ?>" multiple name="wlf_fields_loop<?php echo esc_attr($value);?>[]" class="wlf_multi_select">
 									<option <?php echo in_array('all', $sec_field_vals)?"selected":''; ?>  value="<?php echo 'all'; ?>">All</option>
 									<?php
 										foreach ($prs as $valuePostType) {
@@ -123,7 +147,7 @@ if (!class_exists('MyTestimonial_Add')) {
 								<?php 
 								global $wp_post_types;
 								?>
-								<select data-id="<?php echo esc_attr(get_the_id()); ?>" data-val="<?php echo esc_attr($value); ?>"  name="act_unm<?php echo esc_attr($value);?>" class="select_post_type act_type_select">
+								<select id="wlf_act_<?php echo esc_attr($value); ?>" data-id="<?php echo esc_attr(get_the_id()); ?>" data-val="<?php echo esc_attr($value); ?>"  name="act_unm<?php echo esc_attr($value);?>" class="select_post_type act_type_select">
 									<option selected>Select Post Type</option>
 										<?php
 										$meta_id = get_option( 'wf_post_unique' );
@@ -147,12 +171,13 @@ if (!class_exists('MyTestimonial_Add')) {
 								global $wp_post_types;
 								$args       = array(
 											'post_type' => $act_unm_sel_val,
+											'numberposts' => -1
 										);
 								$prs       = get_posts( $args );
 
 								?>
 								<div style="display: flex;">
-								<select id="act_wlf_multi_select<?php echo $value; ?>" multiple name="act_wlf_fields_loop<?php echo $value;?>[]" class="wlf_multi_select">
+								<select id="act_wlf_multi_select<?php echo $value; ?>" multiple name="act_wlf_fields_loop<?php echo $value;?>[]" class="wlf_multi_select act_wlf">
 									<option <?php echo in_array('all', $act_sec_field_vals)?"selected":''; ?>  value="<?php echo 'all'; ?>">All</option>
 									<?php
 									
@@ -177,7 +202,7 @@ if (!class_exists('MyTestimonial_Add')) {
 									</div>
 							</div>
 						</div>
-
+					</div>
 						<hr class="hr_style" />
 	
 						<?php
@@ -664,6 +689,7 @@ if (!class_exists('MyTestimonial_Add')) {
 			}
 			$args       = array(
 				'post_type'   => $pro,
+				'numberposts' => -1
 			);
 
 			$pros       = get_posts( $args );

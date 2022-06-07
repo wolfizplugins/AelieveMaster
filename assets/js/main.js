@@ -2,6 +2,7 @@ jQuery(document).ready(function($) {
     $('.wlf_multi_select').select2();
 });
 
+
 // jQuery(document).ready(function($) {
 //     $('.add_new').click(function(){
 //         $('.latest').append('<br /><tr><td><p> Slogan Name </p></td></tr>');
@@ -9,6 +10,79 @@ jQuery(document).ready(function($) {
 //     });
 // });
 
+jQuery(document).ready(function($) {
+    window.addEventListener('load',function($){
+        $('.wlf_cache_divs').each(function(){
+            // alert($(this).find('.type_select').val());
+            if($(this).find('.type_select').val()=='elementor_library'){
+                $(this).find('.act_type_select').attr('disabled','disabled');
+                var id = $(this).find('.act_wlf').attr('id');
+                // console.log('#select2-'+id+'-results');
+                // $('#select2-'+id+'-results').css('display','none'); 
+            }
+            // console.log("values");
+        });
+    });
+});
+
+
+jQuery(document).ready(function($) {
+    $(document).on('change','.wlf_multi_select',function(e){
+
+        var val = $(this).attr('data-val');
+
+        var id = $(this).attr('id');
+        var selectedtrigger = $('.type_select :selected').val();
+        var selectedtrigger2 = $(this).val();
+        if(selectedtrigger == "elementor_library"){
+            // $('#'+id).attr('multiple',false);
+            // alert('#'+id);
+            $('#wlf_act_'+val).attr('disabled','disabled');
+            // alert(selectedtrigger2);
+            var dat = $('#'+id+' :selected').val();
+            // alert($('#'+id+' :selected').val());
+            $('#wlf_act_'+val)
+            .val('page')
+            .trigger('change');
+            // $('#wlf_act_'+val).val('page');   
+            console.log('#wlf_act_'+val);
+
+            jQuery.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data:{
+                    action: 'wlf_data_for_action',
+                    selectedtrigger2: dat,
+            },
+            success: function (response) {
+                console.log(response);
+                       var resp = jQuery.parseJSON( response );
+                       // $('#act_'+id).select2("val", ["198", "195", "196"]);
+                       // console.log(resp);
+                       if(resp.sel_data){
+                            console.log(resp.sel_data);
+                            // $('#act_'+id)    
+                            // $('#act_'+id).attr('disabled','disabled');
+                            $('#act_'+id).select2(); 
+                            // alert(id); 
+                            // console.log('#select2-act_'+id+'-results');
+                            
+                            $('#act_'+id).val(resp.sel_data).trigger('change');
+                            // $('#select2-'+id+'-results').css('display','none'); 
+                       }
+                       
+                    // var result = jQuery.parseJSON( response );
+                    // $('#act_wlf_multi_select'+val).html(result.sel_data);
+                    // $('#wlf_multi_select'+val).select2();
+                    // $('#state').trigger('change.select2');
+
+            }
+            })
+
+        }
+        // alert($(this).val());//here
+    });
+});
 
 jQuery(document).ready(function($) {
     $(document).on('click','.clear-logs',function(e){
