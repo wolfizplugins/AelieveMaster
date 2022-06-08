@@ -208,6 +208,10 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 												<td>
 													<p>
 													<?php
+													if($val['action_type']=="Page"){
+														echo '<b>'."Page".'</b>';
+													}
+													
 													echo '<b>'.$this->define_post_name($val['action_type']).'</b> <br />';
 													if(in_array('all',  $val['Action']))
 													{
@@ -221,6 +225,7 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 															
 														}
 													}
+													
 													?>
 													</p>
 													<!-- <p>Action</p> -->

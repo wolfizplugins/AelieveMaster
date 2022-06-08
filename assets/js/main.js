@@ -10,20 +10,47 @@ jQuery(document).ready(function($) {
 //     });
 // });
 
-// jQuery(document).ready(function($) {
-//     window.addEventListener('load',function($){
-//         $('.wlf_cache_divs').each(function(){
-//             // alert($(this).find('.type_select').val());
-//             if($(this).find('.type_select').val()=='elementor_library'){
-//                 $(this).find('.act_type_select').attr('disabled','disabled');
-//                 var id = $(this).find('.act_wlf').attr('id');
-//                 // console.log('#select2-'+id+'-results');
-//                 // $('#select2-'+id+'-results').css('display','none'); 
-//             }
-//             // console.log("values");
-//         });
-//     });
-// });
+function trigger($) {
+    $('.wlf_cache_divs').each(function(){
+            if($(this).find('.type_select').val()=='elementor_library'){
+                var id = $(this).find('.wlf_multi_select').attr('id');
+                var dat = $('#'+id+' :selected').val();
+                var ids = $(this).find('.act_wlf').attr('data-ids');
+                var val = $(this).find('.wlf_multi_select').attr('data-val');
+                var idval = "dynamic-"+val;
+                jQuery.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data:{
+                            action: 'wlf_data_for_action',
+                            selectedtrigger2: dat,
+                    },
+                    success: function (response) {
+                        // here68
+                                
+                                if(response==1){
+
+                                    $('#no-display-'+ids).css('display','none');
+                                    $('#no-display-'+val).prev().append('<p id='+idval+'>Cache will be handled on basis of display option of selected template.</p>');
+
+                                }
+                                else{
+                                    $('#'+idval).remove();
+                                    $('#no-display-'+ids).css('display','flex');
+                                    
+                                }
+
+                    }
+                })
+            }
+        });
+}
+
+jQuery(document).ready(function($) {
+    window.addEventListener('load',function(){
+        trigger($);
+    });
+});
 
 
 jQuery(document).ready(function($) {
@@ -34,6 +61,7 @@ jQuery(document).ready(function($) {
         var id = $(this).attr('id');
         var selectedtrigger = $('.type_select :selected').val();
         var selectedtrigger2 = $(this).val();
+        var idval = "dynamic-"+val;
         if(selectedtrigger == "elementor_library"){
             // $('#'+id).attr('multiple',false);
             // alert('#'+id);
@@ -41,11 +69,11 @@ jQuery(document).ready(function($) {
             // alert(selectedtrigger2);
             var dat = $('#'+id+' :selected').val();
             // alert($('#'+id+' :selected').val());
-            $('#wlf_act_'+val)
-            .val('page')
-            .trigger('change');
+                // $('#wlf_act_'+val)
+                // .val('page')
+                // .trigger('change');
             // $('#wlf_act_'+val).val('page');   
-            console.log('#wlf_act_'+val);
+            // console.log('#wlf_act_'+val);
 
             jQuery.ajax({
             url: ajaxurl,
@@ -55,30 +83,28 @@ jQuery(document).ready(function($) {
                     selectedtrigger2: dat,
             },
             success: function (response) {
-                console.log(response);
-                       var resp = jQuery.parseJSON( response );
-                       // $('#act_'+id).select2("val", ["198", "195", "196"]);
-                       // console.log(resp);
-                       if(resp.sel_data){
-                            console.log(resp.sel_data);
-                            // $('#act_'+id)    
-                            // $('#act_'+id).attr('disabled','disabled');
-                            $('#act_'+id).select2(); 
-                            // alert(id); 
-                            // console.log('#select2-act_'+id+'-results');
+                // here68
+                        
+                        if(response==1){
+
+                            $('#no-display-'+val).css('display','none');
+                            $('#no-display-'+val).prev().append('<p id='+idval+'>Cache will be handled on basis of display option of selected template.</p>');
+
+                        }
+                        else{
+                            $('#'+idval).remove();
+                            $('#no-display-'+val).css('display','flex');
                             
-                            $('#act_'+id).val(resp.sel_data).trigger('change');
-                            // $('#select2-'+id+'-results').css('display','none'); 
-                       }
-                       
-                    // var result = jQuery.parseJSON( response );
-                    // $('#act_wlf_multi_select'+val).html(result.sel_data);
-                    // $('#wlf_multi_select'+val).select2();
-                    // $('#state').trigger('change.select2');
+                        }
 
             }
             })
 
+        }
+        else{
+            $('#no-display-'+val).css('display','flex');
+            $('#'+idval).remove();
+            // alert('#'+idval);
         }
         // alert($(this).val());//here
     });
@@ -107,12 +133,22 @@ jQuery(document).ready(function($) {
 
 jQuery(document).ready(function($) {
     $(document).on('change','.type_select',function(e){
+        // here68
         // $(this).parent().next().find('div').css('display','none');
         // $(".wlf_multi_select").select2("val", "");
         // alert($(this).attr('data-id'));
         // alert($(this).attr('data-val'));
+        var selectedtriggerst = $('.type_select :selected').val();
         var id = $(this).attr('data-id');
         var val = $(this).attr('data-val');
+        console.log('#wlf_multi_select'+val);
+        if(selectedtriggerst==='elementor_library'){
+            // $('#wlf_multi_select'+val).attr('multiple',false);
+        }
+        else{
+            // $('#wlf_multi_select'+val).attr('multiple',true);
+        }
+        
         $('#wlf_multi_select'+val).parent().css('display','none');
         $('#wlf_multi_select'+val).select2("val", "");
 
@@ -281,7 +317,7 @@ jQuery(document).ready(function($) {
 });
 
 jQuery(document).ready(function($) {
-    $(document).on('click','.wlf_add',function(e){
+    $(document).on('click','.wlf_add',function(){
 
         var postID = $(this).attr("data-theId");
         // return;
@@ -309,12 +345,15 @@ jQuery(document).ready(function($) {
                    // location.reload(true);
                 }
             }
-        )
+        ).done(function() {
+            trigger($);
+        })
+        // .ajaxComplete(trigger($));
     });
 });
 
 jQuery(document).ready(function($) {
-    $(document).on('click','.wlf_del',function(e){
+    $(document).on('click','.wlf_del',function(){
         var delID  = $(this).attr("data-delId");
         var postID = $(this).attr("data-postId");
         let ajaxurl = wlf_ajax_var.admin_url;
@@ -337,7 +376,9 @@ jQuery(document).ready(function($) {
                    // location.reload(true);
                 }
             }
-        )
+        ).done(function() {
+            trigger($);
+        })
     });
 });
 

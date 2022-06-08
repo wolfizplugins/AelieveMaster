@@ -13,7 +13,7 @@ if (!class_exists('MyTestimonial_Add')) {
 			add_action( 'wp_ajax_wlf_repeater_fields', array($this,'wlf_repeater_fields'), 10 );
 			add_action( 'wp_ajax_wlf_repeater_fields_delete', array($this,'wlf_repeater_fields_delete'), 10 );
 			add_action( 'wp_ajax_wlf_select_data', array($this,'wlf_select_data'), 10 );
-			add_action( 'wp_ajax_wlf_select_data_initial', array($this,'wlf_select_data_initial'), 10 );
+			// add_action( 'wp_ajax_wlf_select_data_initial', array($this,'wlf_select_data_initial'), 10 );
 			add_action( 'wp_ajax_wlf_cloudflare_connection', array($this,'wlf_cloudflare_connection'), 10 );
 			add_action( 'wp_ajax_save_tkn_web_sel', array($this,'save_tkn_web_sel'), 10 );
 			add_action( 'wp_ajax_wlf_cloud_disc', array($this,'wlf_cloud_disc'), 10 );
@@ -33,19 +33,29 @@ if (!class_exists('MyTestimonial_Add')) {
 				$pro = $_POST['selectedtrigger2'];
 			}
 			$data = get_post_meta($pro,'_elementor_conditions');
-			$valsend = array();
-			foreach ($data as $value) {
-				foreach($value as $val){
-					$val1 = explode('/',$val)[3];
-					if(explode('/',$val)[2]=="page"){
-						$valsend[] = $val1;
-					}
-				}
+			$type = get_post_meta($pro,'_elementor_template_type',true);
+			$typearray = array("header","footer","popup");
+			$status;
+			if(in_array($type, $typearray)){
+				// $valsend = array();
+				// foreach ($data as $value) {
+				// 	foreach($value as $val){
+				// 		$val1 = explode('/',$val)[3];
+				// 		if(explode('/',$val)[2]=="page"){
+				// 			$valsend[] = $val1;
+				// 		}
+				// 	}
+				// }
+				// $response       = array(
+				// 	'sel_data' => $valsend,
+				// 	);
+				// echo wp_json_encode( $response );
+				$status = 1;
 			}
-			$response       = array(
-				'sel_data' => $valsend,
-				);
-				echo wp_json_encode( $response );
+			else {
+				$status = 0;
+			}
+			echo $status;
 			die();
 		}
 
@@ -141,7 +151,7 @@ if (!class_exists('MyTestimonial_Add')) {
 								<h1>Action</h1>
 							</div>
 						</div>
-						<div class="wsl-row" style="display: flex;">
+						<div class="wsl-row" id="no-display-<?php echo $value; ?>" style="display: flex;">
 							<div class="wsl-col-6-80">
 								<h4>Select Post Type</h4>
 								<?php 
@@ -177,7 +187,7 @@ if (!class_exists('MyTestimonial_Add')) {
 
 								?>
 								<div style="display: flex;">
-								<select id="act_wlf_multi_select<?php echo $value; ?>" multiple name="act_wlf_fields_loop<?php echo $value;?>[]" class="wlf_multi_select act_wlf">
+								<select id="act_wlf_multi_select<?php echo $value; ?>" data-ids="<?php echo $value; ?>" multiple name="act_wlf_fields_loop<?php echo $value;?>[]" class="wlf_multi_select act_wlf">
 									<option <?php echo in_array('all', $act_sec_field_vals)?"selected":''; ?>  value="<?php echo 'all'; ?>">All</option>
 									<?php
 									
@@ -355,6 +365,41 @@ if (!class_exists('MyTestimonial_Add')) {
 					if($unm==$postType){
 						$act_unm = get_post_meta($id,'act_unm'.$field,true);
 						$wlf_fields_loop = get_post_meta($id,'wlf_fields_loop'.$field,true);
+						
+						$conditions = array("header","footer","popup");
+						$meta = get_post_meta($post_upfront_id,'_elementor_template_type',true);
+						update_option('data',$meta);
+						if(in_array($meta, $conditions))
+						{
+							// here68
+							$act = get_post_meta($post_upfront_id,'_elementor_conditions');
+							$valsend = array();
+							foreach ($act as $value) {
+								foreach($value as $val){
+									$val1 = explode('/',$val)[3];
+									if(explode('/',$val)[2]=="page"){
+										$valsend[] = $val1;
+									}
+								}
+							}
+							// update_option('data',$valsend);
+
+			                $status = $this->wlf_wp_rocket($valsend,"page");
+			                $status1 = $this->wlf_cloudflare($valsend,"page");
+
+							$data[] = array(
+								'ID' => $id,
+								'On' => $post_upfront_id,
+								'trigger_type' => $unm,
+								'Trigger' => $wlf_fields_loop,
+								'action_type' => "p",
+								'Action' => $valsend,
+								'date_time' => $date,
+								'cloudflare' => $status1?$status1:'0',
+								'wp_rocket' => $status?$status:'0',
+							);
+						}
+						else{
 
 						if(in_array('all', $wlf_fields_loop)){
 							$act_wlf_fields_loop = get_post_meta($id,'act_wlf_fields_loop'.$field,true);
@@ -408,7 +453,7 @@ if (!class_exists('MyTestimonial_Add')) {
 						{
 							continue;
 						}
-						
+						}
 					}
 					else
 					{
