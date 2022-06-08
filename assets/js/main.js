@@ -10,20 +10,20 @@ jQuery(document).ready(function($) {
 //     });
 // });
 
-jQuery(document).ready(function($) {
-    window.addEventListener('load',function($){
-        $('.wlf_cache_divs').each(function(){
-            // alert($(this).find('.type_select').val());
-            if($(this).find('.type_select').val()=='elementor_library'){
-                $(this).find('.act_type_select').attr('disabled','disabled');
-                var id = $(this).find('.act_wlf').attr('id');
-                // console.log('#select2-'+id+'-results');
-                // $('#select2-'+id+'-results').css('display','none'); 
-            }
-            // console.log("values");
-        });
-    });
-});
+// jQuery(document).ready(function($) {
+//     window.addEventListener('load',function($){
+//         $('.wlf_cache_divs').each(function(){
+//             // alert($(this).find('.type_select').val());
+//             if($(this).find('.type_select').val()=='elementor_library'){
+//                 $(this).find('.act_type_select').attr('disabled','disabled');
+//                 var id = $(this).find('.act_wlf').attr('id');
+//                 // console.log('#select2-'+id+'-results');
+//                 // $('#select2-'+id+'-results').css('display','none'); 
+//             }
+//             // console.log("values");
+//         });
+//     });
+// });
 
 
 jQuery(document).ready(function($) {
@@ -37,7 +37,7 @@ jQuery(document).ready(function($) {
         if(selectedtrigger == "elementor_library"){
             // $('#'+id).attr('multiple',false);
             // alert('#'+id);
-            $('#wlf_act_'+val).attr('disabled','disabled');
+            // $('#wlf_act_'+val).attr('disabled','disabled');
             // alert(selectedtrigger2);
             var dat = $('#'+id+' :selected').val();
             // alert($('#'+id+' :selected').val());
@@ -142,7 +142,7 @@ jQuery(document).ready(function($) {
         })
         setTimeout(function(e) {
             $('#wlf_multi_select'+val).parent().css('display','block');
-        },1000);
+        },3000);
         
 
     });
@@ -230,7 +230,7 @@ jQuery(document).ready(function($) {
         })
         setTimeout(function(e) {
             $('#act_wlf_multi_select'+val).parent().css('display','block');
-        },1000);
+        },3000);
         
 
     });
