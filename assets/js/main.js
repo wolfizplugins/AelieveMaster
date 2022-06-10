@@ -9,15 +9,31 @@ jQuery(document).ready(function($) {
 //         return false;
 //     });
 // });
+jQuery(document).ready(function($) {
+    $('.wsl-col-6-80').css('display','none');
+    $('.wlf_del').css('display','none');
+    $('.wlf_add').css('display','none');
+    $('.dtshow').css('display','none');
+
+
+    setTimeout(function(e) {
+       $('.wsl-col-6-80').css('display','block');
+       $('.wlf_del').css('display','block');
+       $('.wlf_add').css('display','block');
+       $('.dtshow').css('display','none');
+    },2000);
+});
 
 function trigger($) {
     $('.wlf_cache_divs').each(function(){
+        // here610
             if($(this).find('.type_select').val()=='elementor_library'){
                 var id = $(this).find('.wlf_multi_select').attr('id');
                 var dat = $('#'+id+' :selected').val();
                 var ids = $(this).find('.act_wlf').attr('data-ids');
                 var val = $(this).find('.wlf_multi_select').attr('data-val');
                 var idval = "dynamic-"+val;
+                $('#no-display-'+ids).css('display','none');
                 jQuery.ajax({
                     url: ajaxurl,
                     type: 'POST',
@@ -31,7 +47,8 @@ function trigger($) {
                                 if(response==1){
 
                                     $('#no-display-'+ids).css('display','none');
-                                    $('#no-display-'+val).prev().append('<p id='+idval+'>Cache will be handled on basis of display option of selected template.</p>');
+                                    if( $('#'+idval).length < 1 )
+                                    $('#no-display-'+val).parent().append('<p class=dtshow id='+idval+'>Cache will be handled on basis of display option of selected template.</p>');
 
                                 }
                                 else{
@@ -88,7 +105,8 @@ jQuery(document).ready(function($) {
                         if(response==1){
 
                             $('#no-display-'+val).css('display','none');
-                            $('#no-display-'+val).prev().append('<p id='+idval+'>Cache will be handled on basis of display option of selected template.</p>');
+                            if( $('#'+idval).length < 1 )
+                            $('#no-display-'+val).parent().append('<p class=dtshow id='+idval+'>Cache will be handled on basis of display option of selected template.</p>');
 
                         }
                         else{
@@ -133,7 +151,7 @@ jQuery(document).ready(function($) {
 
 jQuery(document).ready(function($) {
     $(document).on('change','.type_select',function(e){
-        // here68
+        // here610
         // $(this).parent().next().find('div').css('display','none');
         // $(".wlf_multi_select").select2("val", "");
         // alert($(this).attr('data-id'));
@@ -142,12 +160,12 @@ jQuery(document).ready(function($) {
         var id = $(this).attr('data-id');
         var val = $(this).attr('data-val');
         console.log('#wlf_multi_select'+val);
-        if(selectedtriggerst==='elementor_library'){
-            // $('#wlf_multi_select'+val).attr('multiple',false);
-        }
-        else{
-            // $('#wlf_multi_select'+val).attr('multiple',true);
-        }
+        // if(selectedtriggerst=='elementor_library'){
+        //     $('#wlf_multi_select'+val).attr('multiple',false);
+        // }
+        // else{
+        //     $('#wlf_multi_select'+val).attr('multiple',true);
+        // }
         
         $('#wlf_multi_select'+val).parent().css('display','none');
         $('#wlf_multi_select'+val).select2("val", "");

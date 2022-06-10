@@ -134,7 +134,7 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 				$new_date = date('d-M-Y', $old_date_timestamp);  
 
 				// echo $created_date-$new_date;
-				if($created_date-$new_date>=$keeplogsfor || $created_date-$new_date<=$keeplogsfor){
+				if($created_date-$new_date>=$keeplogsfor){
 					unset($log_data[$key]);
 					$count++;
 				}

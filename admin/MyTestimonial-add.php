@@ -392,7 +392,7 @@ if (!class_exists('MyTestimonial_Add')) {
 								'On' => $post_upfront_id,
 								'trigger_type' => $unm,
 								'Trigger' => $wlf_fields_loop,
-								'action_type' => "p",
+								'action_type' => "page",
 								'Action' => $valsend,
 								'date_time' => $date,
 								'cloudflare' => $status1?$status1:'0',
@@ -656,6 +656,7 @@ if (!class_exists('MyTestimonial_Add')) {
 				wp_enqueue_style( 'wselect2-css', WLF_URL . '/assets/css/select2.css' , array(), '4.1.0-rc.0');
 				wp_enqueue_style( 'wstyle-css', WLF_URL . '/assets/css/style1.css' , array(), '4.1.0-rc.0');
 				wp_enqueue_style( 'wstyle-setting-css', WLF_URL . '/assets/css/wlf_settings.css' , array(), '4.1.0-rc.0');
+				wp_enqueue_style( 'wlmain-css', WLF_URL . '/assets/css/main.css',  array(), '4.1.0-rc.0');
 
 				//Add the Select2 JavaScript file
 				wp_enqueue_script( 'wselect2-js', WLF_URL . '/assets/js/select2.js' , 'jquery', '4.1.0-rc.0', false);
