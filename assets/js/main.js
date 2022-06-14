@@ -33,7 +33,7 @@ function trigger($) {
                 var ids = $(this).find('.act_wlf').attr('data-ids');
                 var val = $(this).find('.wlf_multi_select').attr('data-val');
                 var idval = "dynamic-"+val;
-                $('#no-display-'+ids).css('display','none');
+                // $('#no-display-'+ids).css('display','none');
                 jQuery.ajax({
                     url: ajaxurl,
                     type: 'POST',
@@ -47,9 +47,10 @@ function trigger($) {
                                 if(response==1){
 
                                     $('#no-display-'+ids).css('display','none');
-                                    if( $('#'+idval).length < 1 )
-                                    $('#no-display-'+val).parent().append('<p class=dtshow id='+idval+'>Cache will be handled on basis of display option of selected template.</p>');
-
+                                    if( $('#'+idval).length < 1 ){
+                                        $('#no-display-'+val).parent().append('<p class=dtshow id='+idval+'>Cache will be handled on basis of display option of selected template.</p>');
+                                        $('#'+idval).css('display','block');
+                                    }
                                 }
                                 else{
                                     $('#'+idval).remove();

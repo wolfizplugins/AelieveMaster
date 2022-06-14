@@ -57,7 +57,7 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 		}
 
 		public function init_hook(){
-
+			
 			include_once WLF_PLUGIN_DIR . 'admin/wlf_general_setting.php';
 		}
 		
@@ -172,6 +172,7 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 									<?php
 							    	// 	update_option('log_data_2','');
 									$log_data = get_option('log_data_2');
+									// print_r($log_data);
 									if($log_data){
 										// echo sizeof($log_data);
 										$size = sizeof($log_data);

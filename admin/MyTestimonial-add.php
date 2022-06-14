@@ -123,6 +123,7 @@ if (!class_exists('MyTestimonial_Add')) {
 								global $wp_post_types;
 								$args       = array(
 											'post_type' => $unm_sel_val,
+											'numberposts' => -1
 										);
 								$prs       = get_posts( $args );
 								?>
@@ -247,10 +248,11 @@ if (!class_exists('MyTestimonial_Add')) {
 			$zzn = get_option('wf_conf_zone_unique');
 
 			$pages_to_clean_preload = array();
-
+			$domain = get_site_url();
 			foreach ($page as $eachpage) {
 
-				$pages_to_clean_preload[] = get_permalink( $eachpage );
+				$pages_to_clean_preload[] = $domain.'/'.basename(get_permalink($eachpage));
+				// $pages_to_clean_preload[] = get_permalink($eachpage);
 
 			}
 
@@ -318,13 +320,15 @@ if (!class_exists('MyTestimonial_Add')) {
 
 			}
 			
-		    $status;
+		    $status=0;
 			// Load WordPress.
 			require(trailingslashit( ABSPATH ) .'wp-load.php' );
 			define( 'WP_USE_THEMES', false );
 			$pages_to_clean_preload = array();
+			$domain = get_site_url();
 			foreach ($page as $eachpage) {
-				$pages_to_clean_preload[] = get_permalink( $eachpage );
+				$pages_to_clean_preload[] = $domain.'/'.basename(get_permalink($eachpage));
+				// $pages_to_clean_preload[] = get_permalink( $eachpage );
 			}
 
 			if ( function_exists( 'rocket_clean_post' ) ) {
@@ -377,8 +381,13 @@ if (!class_exists('MyTestimonial_Add')) {
 							foreach ($act as $value) {
 								foreach($value as $val){
 									$val1 = explode('/',$val)[3];
-									if(explode('/',$val)[2]=="page"){
-										$valsend[] = $val1;
+									if(!$val1){
+										$valsend[] = "all";
+									}
+									else{
+										if(explode('/',$val)[2]=="page"){
+											$valsend[] = $val1;
+										}
 									}
 								}
 							}
@@ -767,40 +776,6 @@ if (!class_exists('MyTestimonial_Add')) {
 				'sel_data' => $dat,
 				);
 				echo wp_json_encode( $response );
-			die();
-
-		}
-
-		public function wlf_select_data_initial() {
-
-			if(isset($_POST['wlfselected'])){
-				$pro = $_POST['wlfselected'];
-			}
-			$args       = array(
-				'post_type'   => $pro,
-			);
-
-			$pros       = get_posts( $args );
-			$sec_field_vals=(array)get_post_meta($_POST['id'],'wlf_fields_loop'.$_POST['val'],true);
-			// print_r($sec_field_vals);
-			ob_start();
-			?>
-			<select multiple id="af_er_edit_review_products_can_be_review" name="" class="wlf_multi_select">
-				<?php if($pro!='Select Post Type'){ ?><option >All</option>
-				<?php
-				}
-					foreach ($pros as $valuePostType) {
-					?>
-						<option  value="<?php echo esc_attr($valuePostType->ID) ?>" 
-						<?php echo in_array($valuePostType->ID, $sec_field_vals,true)?"selected":""; ?> >
-						<?php echo $valuePostType->post_title; ?>
-							
-						</option> 
-				<?php } ?>
-			</select>
-			<?php
-			$dat = ob_get_clean();
-			echo $dat;
 			die();
 
 		}
