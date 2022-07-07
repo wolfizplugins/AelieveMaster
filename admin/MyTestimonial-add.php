@@ -4,6 +4,9 @@ if (!class_exists('MyTestimonial_Add')) {
 	class MyTestimonial_Add {
 	
 		public function __construct() {
+			// echo '<pre>';
+			// print_r(get_option('cron'));
+			// echo '</pre>';
 
 			add_action( 'add_meta_boxes', array($this,'add_meta_box'));
 			add_action( 'save_post', array($this,'UserDetails'), 10, 1);
@@ -21,7 +24,7 @@ if (!class_exists('MyTestimonial_Add')) {
 			add_action( 'elementor/editor/after_save', array($this,'SaveLogsForElementor'),10 ,2 );
 			add_action( 'wp_ajax_wlf_data_for_action', array($this,'wlf_data_for_action'), 10 );
 		}
-
+	
 		public function SaveLogsForElementor($post_id, $editor_data )
 		{
 			$this->wlf_auto_cache_manage($post_id);

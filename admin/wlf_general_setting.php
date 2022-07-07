@@ -31,12 +31,31 @@ add_settings_section(
 	'wf_man_setting_callback',
 	'wlf_register_man_settings'
 );
+add_settings_section(
+	'wlf_crn_setting',
+	 __( 'Set up cron job', 'wf-jk-textdomain' ),
+	'wf_jk_crn_callback',
+	'wlf_register_crn_settings'
+);
 function wf_jk_generals_callback() { }
 function wf_general_setting_callback() { }
 function wf_log_setting_callback() { }
 function wf_plg_setting_callback() { }
 function wf_man_setting_callback() { }
+function wf_jk_crn_callback(){ }
 
+add_settings_field(
+	'wf_cron_time',
+	__( 'Recurring Time', 'wf-jk-textdomain' ),
+	'wlf_crn_jobs',
+	'wlf_register_crn_settings',
+	'wlf_crn_setting'
+);
+
+register_setting(
+	'wlf_crn_setting-page',
+	'wf_cron_time'
+);
 
 
 add_settings_field(
@@ -224,6 +243,14 @@ function wlf_post_type_input() {
 	 $meta_id = get_option( 'wf_log_days' );
 	?>
 	<input type="number" name="wf_log_days" min="1" value="<?php echo $meta_id; ?>">
+	<?php 
+	
+}
+function wlf_crn_jobs() {
+	 $meta_id = get_option( 'wf_cron_time' );
+	?>
+	<input type="number" name="wf_cron_time" min="1" value="<?php echo $meta_id; ?>">
+	<p>Time should be in hours for recurrence of cron job.</p>
 	<?php 
 	
 }

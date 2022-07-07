@@ -13,6 +13,9 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 	class wlf_auto_cache_main_main { 
 		
 		public function __construct() {
+			add_filter( 'cron_schedules', array( $this, 'wlf_cron_job_time_interval' ) );
+			add_action( 'init', array( $this, 'wlf_cron_job_time_callback' ) );
+			add_action( 'wlf_cron_job_time_update', array( $this, 'wlf_start_cron_job' ) );
 
 			$this->wlf_global_constents_vars();
 			$this->wlf_gutinberg_status();
@@ -30,6 +33,78 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 				// include 'front/MyTestimonial-front.php';
 			}
 		} 
+
+		public function wlf_start_cron_job()
+		{
+			$date = current_time('d-M-Y h:i:s a');
+			$data = get_option('cronjobrun')?:array();
+			$dts = array();
+			$statr = "Error: Ref# WP-Rocket";
+			$statc = "Error: Ref# Cloudflare";
+
+			// update_option('cronjobrun',$date.' , '.$data);
+
+			if ( function_exists( 'rocket_clean_domain' ) ) {
+				rocket_clean_domain();
+				$statr = "Rocket cache cleared";
+			}
+			$zon = get_option('selected_zon');
+			$tkn = get_option('wf_conf_token_unique');
+			$zzn = get_option('wf_conf_zone_unique');
+			$curl = curl_init();
+			curl_setopt_array($curl, array(
+			  CURLOPT_URL => 'https://api.cloudflare.com/client/v4/zones/'.$zon.'/purge_cache/',
+			  CURLOPT_RETURNTRANSFER => true,
+			  CURLOPT_ENCODING => '',
+			  CURLOPT_MAXREDIRS => 10,
+			  CURLOPT_TIMEOUT => 0,
+			  CURLOPT_FOLLOWLOCATION => true,
+			  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			  CURLOPT_CUSTOMREQUEST => 'POST',
+			  CURLOPT_POSTFIELDS =>'{"purge_everything":true}',
+			  CURLOPT_HTTPHEADER => array(
+			    'X-Auth-Email: '.$tkn,
+			    'X-Auth-Key: '.$zzn,
+			    'Content-Type: application/json'
+			  ),
+			));
+			$response = curl_exec($curl);
+
+			curl_close($curl);
+
+			$respjson = json_decode($response);
+
+			if($respjson->success){
+				$statc="Cloudflare cache purged";
+			}
+			$dts[] = array(
+					'date'=>$date,
+					'rocket'=>$statr,
+					'cldfr'=>$statc
+				);
+			if($data){
+				update_option('cronjobrun',array_merge($dts,$data));
+			}
+			else{
+				update_option('cronjobrun',array_merge($dts,$data));
+			}
+		}
+
+		public function wlf_cron_job_time_callback()
+		{
+			if ( ! wp_next_scheduled( 'wlf_cron_job_time_update' ) ) {
+				wp_schedule_event( time() , 'wlf_aelieve_cron_time', 'wlf_cron_job_time_update' );
+			}
+		}
+		public function wlf_cron_job_time_interval( $schedules )
+		{
+			$wf_cron_time = get_option( 'wf_cron_time' )?:24;
+			$wf_cron_time_sec = $wf_cron_time*60*60;
+			$schedules['wlf_aelieve_cron_time'] = array(
+				'interval' => $wf_cron_time_sec
+			);
+			return $schedules;
+		}
 
 		public function my_upgrade_function( $upgrader_object, $options ) {
 			$selected_plugins = get_option('wf_plg_selected');
@@ -123,6 +198,8 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 		public function wlf_delete_log()
 		{
 			$log_data = get_option('log_data_2');
+			$cronlogs = get_option('cronjobrun');
+			// here
 			$created_date = date('d-M-Y');
 			$keeplogsfor = get_option('wf_log_days');
 			$count=0;
@@ -140,7 +217,22 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 				}
 				
 			}
+			foreach ($cronlogs as $key=>$value) {
+				// echo $value['date_time'].'<br />';
+				$old_date = $value['date']; 
+				$old_date_timestamp = strtotime($old_date);
+				$new_date = date('d-M-Y', $old_date_timestamp);  
+
+				// echo $created_date-$new_date;
+				if($created_date-$new_date>=$keeplogsfor){
+					unset($cronlogs[$key]);
+					$count++;
+				}
+				
+			}
 			update_option('log_data_2',$log_data);
+			update_option('cronjobrun',$cronlogs);
+
 			echo $count;
 			die();
 			
@@ -260,7 +352,61 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 						</div>
 					</div>
 				</div>
+				<div class="dashboard_heading">
+
+						<h1 class="dashboard_heading1"><?php esc_html_e('Cron Logs'); ?></h1>
+						<div class="dashboard_button">
+							<!-- <button class="button button-primary clear-logs">Clear Logs</button><br /> -->
+							<img class="loader-img" src="<?php echo WLF_URL.'assets/img/loader.gif' ?>">
+						</div>
+
+				</div>
+						<div class="main_value_div">
+						<div class="view_all_data_class">
+							<table class="af_sm_table">
+									<tr class="first_row_table">
+										<th>No.</th>
+										<th>Time</th>
+										<th>WP Rocket</th>	
+										<th>Clouflare</th>					
+
+									</tr>
+									<?php
+							    	// 	update_option('log_data_2','');
+									$cronlogs = get_option('cronjobrun');
+									// echo '<pre>';
+									// print_r($cronlogs);
+									// echo '</pre>';
+
+									if($cronlogs){
+										// echo sizeof($log_data);
+										$size = sizeof($cronlogs);
+										foreach ($cronlogs as $key=>$val) {
+										?>
+											<tr>
+												<td><?php echo $key+1; ?></td>
+												<td><?php echo $val['date']; ?></td>
+												<td><?php echo $val['rocket']; ?></td>
+												<td><?php echo $val['cldfr']; ?></td>
+
+
+											</tr>
+											<?php 
+										}
+
+									 }else
+									 { ?>
+											<td>
+												<p>No logs found</p>
+											</td>
+									<?php 
+								} ?>
+
+							</table>
+						</div>
+					</div>
 			  <?php
+			  
 		}
 
 		public function main_settings(){
@@ -310,6 +456,11 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 					<a href="?post_type=wlf_auto_cache&page=setting-sub&tab=wlf_man_tab" class="nav-tab <?php echo esc_attr( $active_tab ) === 'wlf_man_tab' ? 'nav-tab-active' : ''; ?>">
 						<?php
 						echo esc_html__( 'Manual Cache Clean', 'wf-jk-textdomain' );
+						?>
+					</a>
+					<a href="?post_type=wlf_auto_cache&page=setting-sub&tab=wlf_crn_tab" class="nav-tab <?php echo esc_attr( $active_tab ) === 'wlf_crn_tab' ? 'nav-tab-active' : ''; ?>">
+						<?php
+						echo esc_html__( 'Cron Jobs', 'wf-jk-textdomain' );
 						?>
 					</a>	    			    				
 				</h2>
@@ -373,6 +524,11 @@ if (!class_exists('wlf_auto_cache_main_main')) {
 				<p style="margin-left:10px"><?php echo get_option("cache_status"); ?></p>
 				<input type="button" name="savesettings" style="margin:10px" class="button-primary wlf_manual_cache" value="Clear Cache">
 				<?php
+			}
+			if ('wlf_crn_tab'===$active_tab) {
+				settings_fields( 'wlf_crn_setting-page' );
+				do_settings_sections( 'wlf_register_crn_settings' );
+				submit_button();
 			}
 				  
 				

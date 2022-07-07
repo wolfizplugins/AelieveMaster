@@ -142,8 +142,9 @@ jQuery(document).ready(function($) {
                     // if(response>0){
                     //     alert("Number of records deleted => "+response);
                     // }
-                    $( ".af_sm_table" ).load(window.location.href + " .af_sm_table" );
-                    console.log(response);
+                    // $( ".af_sm_table" ).load(window.location.href + " .af_sm_table" );
+                        location.reload();
+                    // console.log(response);
                     $('.loader-img').css('opacity','0');
             }
         })
